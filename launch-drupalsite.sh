@@ -58,9 +58,6 @@ if ! ddev drush status | grep -q 'Drupal version'; then
     --locale=en
 fi
 
-# Launch the Drupal site in the browser.
 ddev launch
-
-# Show the status of the DDEV environment.
 ddev status
 
