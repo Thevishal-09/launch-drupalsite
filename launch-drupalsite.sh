@@ -33,7 +33,7 @@ if [ $n -gt 0 ]; then
 fi
 
 # Configure DDEV if not already done.
-test -d .ddev || ddev config --project-type=drupal11 --docroot=web --php-version=8.3 --ddev-version-constraint=">=1.24.0" --project-name="$NAME"
+test -d .ddev || ddev config --project-type=drupal10 --docroot=web --php-version=8.3 --ddev-version-constraint=">=1.24.0" --project-name="$NAME"
 
 # Start the DDEV containers.
 ddev start
@@ -41,23 +41,15 @@ ddev start
 # Install Composer dependencies if composer.lock doesn't exist.
 test -f composer.lock || ddev composer install
 
-# Install Drush if not already installed
-if ! ddev composer show drush/drush >/dev/null; then
-  echo "Installing Drush..."
-  ddev composer require drush/drush
-fi
+# Ensure Drush is installed.
+ddev composer require drush/drush
 
 # Install Drupal site if not already installed.
-if ! ddev drush status | grep -q 'Drupal version'; then
-  echo "Installing Drupal site..."
-  ddev drush site:install standard \
-    --db-url=mysql://db:db@db/db \
-    --site-name="My Drupal Site" \
-    --account-name=admin \
-    --account-pass=admin \
-    --locale=en
+if ! ddev drush status --field=bootstrap | grep -q 'Successful'; then
+  ddev drush site:install
 fi
 
+# Launch the site and display status and login link.
 ddev launch
 ddev status
-
+ddev drush uli
