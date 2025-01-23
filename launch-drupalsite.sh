@@ -42,10 +42,12 @@ ddev start
 test -f composer.lock || ddev composer install
 
 # Ensure Drush is installed.
+echo "Installing Drush..."
 ddev composer require drush/drush
 
 # Install Drupal site if not already installed.
 if ! ddev drush status --field=bootstrap | grep -q 'Successful'; then
+  echo "Installing Drupal site..."
   ddev drush site:install
 fi
 
